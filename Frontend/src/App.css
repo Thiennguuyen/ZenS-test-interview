@@ -1,0 +1,34 @@
+#root {
+  max-width: 100vw;
+  text-align: center;
+}
+
+.header {
+    justify-content: space-between;
+    /* position: fixed;
+    top: 0; */
+}
+
+.pushable {
+    background: #039640;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+  }
+  .front {
+    display: block;
+    width: 13rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    background: #29b363;
+    color: white;
+    transform: translateY(-3px);
+  }
+
+  .pushable:active .front {
+    transform: translateY(-2px);
+  }
