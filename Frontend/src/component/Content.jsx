@@ -1,31 +1,95 @@
 import React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 const Content = () => {
+    const [jokeData, setJokeData] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const sendRequest = async () => {
+            const response = await fetch("http://localhost:5000/joke")
+            .then((response) => response.json())
+            .then((data) => setJokeData(data.result));
+        } 
+        sendRequest();
+        for (let i = 0; i < jokeData.length; i++) {
+            if (!Cookies.get(jokeData[i]?._id)) {
+                setCurrentIndex(i);
+                break;
+            }
+        }
+    }, [jokeData]);
+
+    const findCurrentJoke = () => {
+        let currentJoke = "END";
+        for (let i = 0; i < jokeData.length; i++) {
+            if (!Cookies.get(jokeData[i]?._id)) {
+                currentJoke = jokeData[i]?.content;
+                return currentJoke;
+            }
+        }
+        return currentJoke;
+    }
+
+    const handleLike = async (index) => {
+        Cookies.set(jokeData[index]._id, "isVotedLIke");
+        await fetch(`http://localhost:5000/joke/${jokeData[index]._id}/like`, {
+            method: "PATCH",
+        })
+        setCurrentIndex(currentIndex + 1);
+    }
+
+    const handleDislike = async (index) => {
+        Cookies.set(jokeData[index]._id, "isVotedDislike");
+        await fetch(`http://localhost:5000/joke/${jokeData[index]._id}/dislike`, {
+            method: "PATCH",
+        })
+        setCurrentIndex(currentIndex + 1);
+    }
+
     return (
         <>
-            <div className="my-14 mx-[20%]">
-                <div>
-                    <p className="text-left text-base text-[#615757]">
-                        A child asked his father, "How were people born?" So his father said, "Adam and Eve made babies, then their babies became adults and made babies, and so on."
-                        The child then went to his mother, asked her the same question and she told him, "We were monkeys then we evolved to become like we are now."
-                        The child ran back to his father and said, "You lied to me!" His father replied, "No, your mom was talking about her side of the family."
-                    </p>
-                </div>
-                <div className="h-12 mx-[10%]" style={{borderBottomWidth: "1px"}}></div>
-                <div className="flex items-center justify-center my-10 space-x-6">
-                    <button className="pushable bg-[#0552aa]"> 
-                        <span className="front bg-[#2c7edb]">
-                            This is Funny!
-                        </span>                                                                  
-                    </button>
-                    <button className="pushable bg-[#039640]">
-                        <span className="front bg-[#29b363]">
-                            This is not Funny!
-                        </span>              
-                    </button>
-                </div>
-            </div>
-            <div className="border-b-2 h-4 border-stone-200"></div>
+            {
+                findCurrentJoke() === "END" ? (
+                    <>
+                        <div className="my-14 mx-[20%]">
+                            <div>
+                                <p className="text-center text-base text-[#615757]">
+                                    "That's all the jokes for today! Come back another day!"
+                                </p>
+                            </div>
+                        </div>
+                        <div className="border-b-2 h-4 border-stone-200"></div>
+                    </>
+                ) : (
+                    <>
+                    <div className="my-14 mx-[20%]">
+                        <div>
+                            <p className="text-left text-base text-[#615757]">
+                                {findCurrentJoke()}
+                            </p>
+                        </div>
+                        <div className="h-12 mx-[10%]" style={{borderBottomWidth: "1px"}}></div>
+                        <div className="flex items-center justify-center my-10 space-x-6">
+                            <button className="pushable bg-[#0552aa]" onClick={() => {handleLike(currentIndex)}}> 
+                                <span className="front bg-[#2c7edb]">
+                                    This is Funny!
+                                </span>                                                                  
+                            </button>
+                            <button className="pushable bg-[#039640]" onClick={() => {handleDislike(currentIndex)}}>
+                                <span className="front bg-[#29b363]">
+                                    This is not Funny!
+                                </span>              
+                            </button>
+                        </div>
+                    </div>
+                    <div className="border-b-2 h-4 border-stone-200"></div>
+                    </>
+                )
+            }
+            
         </>
     )
 }
