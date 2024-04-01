@@ -14,6 +14,7 @@ app.use(cors());
 router(app);
 
 app.use((error, req, res, next) => {
+    res.setHeader('x-content-type-options', 'nosniff');
 	if (res.headerSent) {
 		return next(error);
 	}
