@@ -1,7 +1,7 @@
 import React from "react";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+const LINKBACKEND = "https://zens-test-interview.onrender.com"
 
 const Content = () => {
     const [jokeData, setJokeData] = useState([]);
@@ -9,7 +9,7 @@ const Content = () => {
 
     useEffect(() => {
         const sendRequest = async () => {
-            const response = await fetch("http://localhost:5000/joke")
+            const response = await fetch(`${LINKBACKEND}/joke`)
             .then((response) => response.json())
             .then((data) => setJokeData(data.result));
         } 
@@ -54,7 +54,7 @@ const Content = () => {
             {
                 findCurrentJoke() === "END" ? (
                     <>
-                        <div className="my-14 mx-[20%]">
+                        <div className=" flex my-14 mx-[20%] h-52 justify-center items-center">
                             <div>
                                 <p className="text-center text-base text-[#615757]">
                                     "That's all the jokes for today! Come back another day!"
